@@ -1,0 +1,72 @@
+// buildscript 必须在 plugins 前面
+buildscript {
+    repositories {
+        maven {
+            url = uri("file://$projectDir/local-maven/")
+        }
+    }
+    dependencies {
+        classpath 'com.amylovesong.s:gradle-samples:1.0-SNAPSHOT'
+    }
+}
+
+plugins {
+    id 'groovy'
+    id 'maven'
+}
+
+group 'com.amylovesong.s'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+//    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    implementation gradleApi()
+    implementation localGroovy()
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        snapshotRepository(url: "file://$projectDir/local-maven/")
+    }
+}
+
+task greeting(type: org.gradle.GreetingTask) {
+    greeting = 'hello from sxl~'
+}
+
+// 增量
+task incrementalReverse(type: org.gradle.IncrementalReverseTask) {
+    inputDir = file('inputs')
+    outputDir = file("$buildDir/outputs")
+    inputProperty = project.properties['taskInputProperty'] ?: 'original'
+}
+
+task updateInputs() {
+    doLast {
+        file('inputs/1.txt').text = 'Changed content for existing file 1.'
+        file('inputs/4.txt').text = 'Content for new file 4.'
+    }
+}
+
+task removeInputs() {
+    doLast {
+        file('inputs/3.txt').delete()
+    }
+}
+
+task removeOutput() {
+    doLast {
+        file("$buildDir/outputs/1.txt").delete()
+    }
+}
+
+// 命令行参数
+task verifyUrl(type: org.gradle.UrlVerify)
