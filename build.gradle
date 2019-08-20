@@ -70,3 +70,6 @@ task removeOutput() {
 
 // 命令行参数
 task verifyUrl(type: org.gradle.UrlVerify)
+
+// 命令行参数的取值列表
+task processUrl(type: org.gradle.UrlProcess)
