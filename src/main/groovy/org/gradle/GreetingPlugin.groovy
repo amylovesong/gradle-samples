@@ -9,7 +9,9 @@ class GreetingPlugin implements Plugin<Project> {
         // Add the 'greeting' extension object
         def extension = project.extensions.create('greeting', GreetingPluginExtension)
         // Add a task that uses configuration from the extension object
-        project.task('hello') {
+        project
+//                .task('hello')
+                .tasks.create('hello', GreetingTask) {
             doLast {
 //                println 'Hello from the GreetingPlugin'
 //                println extension.message
