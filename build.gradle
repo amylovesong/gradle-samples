@@ -38,6 +38,8 @@ uploadArchives {
     }
 }
 
+//-------- Custom tasks --------
+
 task greeting(type: org.gradle.GreetingTask) {
     greeting = 'hello from sxl~'
 }
@@ -73,3 +75,48 @@ task verifyUrl(type: org.gradle.UrlVerify)
 
 // 命令行参数的取值列表
 task processUrl(type: org.gradle.UrlProcess)
+
+//-------- Custom plugins --------
+class GreetingPluginExtension {
+    String message = 'Hello from GreetingPlugin'
+    String greeter
+}
+
+class GreetingPlugin implements Plugin<Project> {
+    @Override
+    void apply(Project project) {
+        // Add the 'greeting' extension object
+        def extension = project.extensions.create('greeting', GreetingPluginExtension)
+        // Add a task that uses configuration from the extension object
+        project.task('hello') {
+            doLast {
+//                println 'Hello from the GreetingPlugin'
+//                println extension.message
+                println "${extension.message} from ${extension.greeter}"
+            }
+        }
+    }
+}
+
+apply plugin: GreetingPlugin
+
+// Configure the extension
+//greeting.message = 'Hi from Gradle'
+greeting {
+    message = 'Hi'
+    greeter = 'Gradle'
+}
+
+// Working with files
+task greet(type: org.gradle.GreetingToFileTask) {
+    // lazy evaluation
+    destination = { project.greetingFile }
+}
+
+task sayGreeting(dependsOn: greet) {
+    doLast {
+        println file(greetingFile).text
+    }
+}
+
+ext.greetingFile = "$buildDir/hello.txt"
